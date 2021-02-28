@@ -216,7 +216,7 @@ def train_one_epoch(sess, ops, train_writer):
     # Shuffle train samples
     train_idxs = np.arange(0, len(TRAIN_DATASET))
     np.random.shuffle(train_idxs)
-    num_batches = len(TRAIN_DATASET)/BATCH_SIZE
+    num_batches = len(TRAIN_DATASET)//BATCH_SIZE
 
     # To collect statistics
     total_correct = 0
@@ -231,10 +231,7 @@ def train_one_epoch(sess, ops, train_writer):
         start_idx = batch_idx * BATCH_SIZE
         end_idx = (batch_idx+1) * BATCH_SIZE
 
-        batch_data, batch_label, batch_center, \
-        batch_hclass, batch_hres, \
-        batch_sclass, batch_sres, \
-        batch_rot_angle, batch_one_hot_vec = \
+        batch_data, batch_label, batch_center, batch_hclass, batch_hres, batch_sclass, batch_sres, batch_rot_angle, batch_one_hot_vec = \
             get_batch(TRAIN_DATASET, train_idxs, start_idx, end_idx,
                 NUM_POINT, NUM_CHANNEL)
 
@@ -292,7 +289,7 @@ def eval_one_epoch(sess, ops, test_writer):
     log_string(str(datetime.now()))
     log_string('---- EPOCH %03d EVALUATION ----'%(EPOCH_CNT))
     test_idxs = np.arange(0, len(TEST_DATASET))
-    num_batches = len(TEST_DATASET)/BATCH_SIZE
+    num_batches = len(TEST_DATASET)//BATCH_SIZE
 
     # To collect statistics
     total_correct = 0

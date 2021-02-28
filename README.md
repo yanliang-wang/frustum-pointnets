@@ -1,9 +1,24 @@
 ## Frustum PointNets for 3D Object Detection from RGB-D Data
-Created by <a href="http://charlesrqi.com" target="_blank">Charles R. Qi</a>, <a href="http://www.cs.unc.edu/~wliu/" target="_black">Wei Liu</a>, <a href="http://www.cs.cornell.edu/~chenxiawu/" target="_blank">Chenxia Wu</a>, <a href="http://cseweb.ucsd.edu/~haosu/" target="_blank">Hao Su</a> and <a href="http://geometry.stanford.edu/member/guibas/" target="_blank">Leonidas J. Guibas</a> from <a href="http://www.stanford.edu" target="_blank">Stanford University</a> and <a href="http://nuro.ai" target="_blank">Nuro Inc.</a>
 
-![teaser](https://github.com/charlesq34/frustum-pointnets/blob/master/doc/teaser.jpg)
+
+#### Reproduction on my computer with python3.6,&TensorFlow1.11-gpu.
+
+**2021/2/28 log**: reproduce it with python3.6&TensorFlow1.11-gpu and add some comments about the codes
+
+Please refer to the following image about the datasets files structure.
+
+<img src="./doc/files_structure.png" style="zoom:70%;" />
+
+
+
+
+
+Forked from <a href="http://charlesrqi.com" target="_blank">Charles R. Qi</a>, <a href="http://www.cs.unc.edu/~wliu/" target="_black">Wei Liu</a>, <a href="http://www.cs.cornell.edu/~chenxiawu/" target="_blank">Chenxia Wu</a>, <a href="http://cseweb.ucsd.edu/~haosu/" target="_blank">Hao Su</a> and <a href="http://geometry.stanford.edu/member/guibas/" target="_blank">Leonidas J. Guibas</a> from <a href="http://www.stanford.edu" target="_blank">Stanford University</a> and <a href="http://nuro.ai" target="_blank">Nuro Inc.</a>
+
+![teaser](./doc/teaser.jpg)
 
 ## Introduction
+
 This repository is code release for our CVPR 2018 paper (arXiv report [here](https://arxiv.org/abs/1711.08488)). In this work, we study 3D object detection from RGB-D data. We propose a novel detection pipeline that combines both mature 2D object detectors and the state-of-the-art 3D deep learning techniques. In our pipeline, we firstly build object proposals with a 2D detector running on RGB images, where each 2D bounding box defines a 3D frustum region. Then based on 3D point clouds in those frustum regions, we achieve 3D instance segmentation and amodal 3D bounding box estimation, using PointNet/PointNet++ networks (see references at bottom).
 
 By leveraging 2D object detectors, we greatly reduce 3D search space for object localization. The high resolution and rich texture information in images also enable high recalls for smaller objects like pedestrians or cyclists that are harder to localize by point clouds only. By adopting PointNet architectures, we are able to directly work on 3D point clouds, without the necessity to voxelize them to grids or to project them to image planes. Since we directly work on point clouds, we are able to fully respect and exploit the 3D geometry -- one example is the series of coordinate normalizations we apply, which help canocalizes the learning problem. Evaluated on KITTI and SUNRGBD benchmarks, our system significantly outperforms previous state of the art and is still in leading positions on current <a href="http://www.cvlibs.net/datasets/kitti/eval_object.php?obj_benchmark=3d">KITTI leaderboard</a>.

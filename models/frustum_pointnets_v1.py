@@ -33,8 +33,8 @@ def get_instance_seg_v1_net(point_cloud, one_hot_vec,
     '''
     batch_size = point_cloud.get_shape()[0].value
     num_point = point_cloud.get_shape()[1].value
-
-    net = tf.expand_dims(point_cloud, 2)
+    # PointNet network,这里的1*1 conv2d 实际上就是全连接层 
+    net = tf.expand_dims(point_cloud, 2)# [B N 4] -->[B N 1 4]
 
     net = tf_util.conv2d(net, 64, [1,1],
                          padding='VALID', stride=[1,1],
@@ -58,7 +58,7 @@ def get_instance_seg_v1_net(point_cloud, one_hot_vec,
                          scope='conv5', bn_decay=bn_decay)
     global_feat = tf_util.max_pool2d(net, [num_point,1],
                                      padding='VALID', scope='maxpool')
-
+    # global_feature concate了 one_hot_vec 和 point_feat 
     global_feat = tf.concat([global_feat, tf.expand_dims(tf.expand_dims(one_hot_vec, 1), 1)], axis=3)
     global_feat_expand = tf.tile(global_feat, [1, num_point, 1, 1])
     concat_feat = tf.concat(axis=3, values=[point_feat, global_feat_expand])
@@ -80,7 +80,7 @@ def get_instance_seg_v1_net(point_cloud, one_hot_vec,
                          bn=True, is_training=is_training,
                          scope='conv9', bn_decay=bn_decay)
     net = tf_util.dropout(net, is_training, 'dp1', keep_prob=0.5)
-
+    # segmentation 的输出 是 二分类
     logits = tf_util.conv2d(net, 2, [1,1],
                          padding='VALID', stride=[1,1], activation_fn=None,
                          scope='conv10')
@@ -156,13 +156,15 @@ def get_model(point_cloud, one_hot_vec, is_training, bn_decay=None):
     # 3D Instance Segmentation PointNet
     logits, end_points = get_instance_seg_v1_net(\
         point_cloud, one_hot_vec,
-        is_training, bn_decay, end_points)
-    end_points['mask_logits'] = logits
+        is_training, bn_decay, end_points) # 没有改变end_points
+    end_points['mask_logits'] = logits #logits 是segmentation的结果，每个点对应两个值，应该分别是 是物体的概率 和 不是物体点的概率
 
     # Masking
     # select masked points and translate to masked points' centroid
+    # 输入点云，segmentation的结果 和end_points
+    # end_points 发生改变，添加了key为mask 的value
     object_point_cloud_xyz, mask_xyz_mean, end_points = \
-        point_cloud_masking(point_cloud, logits, end_points)
+        point_cloud_masking(point_cloud, logits, end_points) 
 
     # T-Net and coordinate translation
     center_delta, end_points = get_center_regression_net(\
